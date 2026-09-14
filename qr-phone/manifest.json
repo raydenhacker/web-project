@@ -1,6 +1,6 @@
 {
-  "name": "QR Generator Offline",
-  "short_name": "QR Phone",
+  "name": "Phone QR Code Generator Offline",
+  "short_name": "Phone QR Gen",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
