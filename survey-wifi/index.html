@@ -468,7 +468,6 @@
                 await navigator.clipboard.write(items);
                 showToast("Teks & Kolase tersalin ke Klipboard!");
             } catch (err) {
-                // Fallback jika browser membatasi izin clipboard gambar
                 navigator.clipboard.writeText(teks);
                 if (imageBlob) {
                     let a = document.createElement('a');
@@ -479,7 +478,23 @@
                 showToast("Teks disalin & file gambar diunduh!");
             }
         } else if (tujuan === 'whatsapp') {
-            // Jika ada kolase gambar, otomatis unduh file gambarnya agar siap dilampirkan di WhatsApp
+            // Cek apakah browser mendukung fitur Share File langsung (Biasanya di HP Android/iOS)
+            if (imageBlob && navigator.canShare && navigator.canShare({ files: [new File([imageBlob], namaFile, { type: 'image/png' })] })) {
+                try {
+                    const file = new File([imageBlob], namaFile, { type: 'image/png' });
+                    await navigator.share({
+                        title: 'Survey Pelanggan',
+                        text: teks,
+                        files: [file]
+                    });
+                    return; // Berhasil share langsung gambar + teks ke WhatsApp lewat menu share HP
+                } catch (err) {
+                    console.log('Share dibatalkan atau gagal, beralih ke metode standar.');
+                }
+            }
+
+            // Fallback untuk PC / Browser yang tidak mendukung share file langsung:
+            // Unduh gambar otomatis & buka WhatsApp teks
             if (imageBlob) {
                 let a = document.createElement('a');
                 a.href = URL.createObjectURL(imageBlob);
